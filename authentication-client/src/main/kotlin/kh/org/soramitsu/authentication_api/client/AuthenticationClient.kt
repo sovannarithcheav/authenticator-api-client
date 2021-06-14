@@ -1,7 +1,7 @@
-package kh.org.sora.authentication_api.client
+package kh.org.soramitsu.authentication_api.client
 
-import kh.org.sora.authentication_api.request.PairingReq
-import kh.org.sora.authentication_api.request.ValidatePinReq
+import kh.org.soramitsu.authentication_api.request.PairingReq
+import kh.org.soramitsu.authentication_api.request.ValidatePinReq
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping

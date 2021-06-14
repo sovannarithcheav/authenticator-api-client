@@ -2,71 +2,67 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 	id("org.springframework.boot") version "2.3.0.RELEASE"
-	id("io.spring.dependency-management") version "1.0.9.RELEASE"
-	kotlin("jvm") version "1.5.0"
+	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("maven-publish")
-	kotlin("plugin.spring") version "1.5.0"
+	kotlin("jvm") version "1.4.21-2"
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_11
-extra["springCloudVersion"] = "Hoxton.SR1"
+allprojects {
 
-repositories {
-	mavenCentral()
-}
-
-dependencies {
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	// Soap
-	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.1")
-	// Rest
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
-	implementation("org.json:json:20200518")
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4")
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4")
-}
-
-dependencyManagement {
-	imports {
-		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-	}
-}
-
-tasks.withType<KotlinCompile> {
-	kotlinOptions {
-		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "11"
-	}
-}
-
-apply {
-	plugin("maven-publish")
-}
-
-publishing {
-	publications {
-		create<MavenPublication>("maven") {
-			groupId = project.properties["group"].toString()
-			artifactId = project.name
-			version = project.properties["version"].toString()
-			from(components["kotlin"])
-		}
+	apply {
+		plugin("org.jetbrains.kotlin.jvm")
 	}
 	repositories {
-		maven {
-			name = "GitHubPackages"
-			url = uri("https://maven.pkg.github.com/sovannarithcheav/authenticator-api-client")
-			credentials {
-				username = "sovannarithcheav"
-				password = "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"
+		mavenCentral()
+		maven { url = uri("https://repo.spring.io/milestone") }
+		maven { url = uri("https://repo.spring.io/snapshot") }
+	}
+	dependencies {
+		implementation("org.jetbrains.kotlin:kotlin-reflect")
+		implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	}
+	java.sourceCompatibility = JavaVersion.VERSION_11
+
+	tasks.withType<KotlinCompile> {
+		kotlinOptions {
+			freeCompilerArgs = listOf("-Xjsr305=strict")
+			jvmTarget = "11"
+		}
+	}
+
+	tasks.withType<Test> {
+		useJUnitPlatform()
+	}
+}
+
+subprojects {
+	apply {
+		plugin("maven-publish")
+	}
+
+	publishing {
+		publications {
+			create<MavenPublication>("maven") {
+				groupId = project.properties["group"].toString()
+				artifactId = project.name
+				version = project.properties["version"].toString()
+				from(components["java"])
+			}
+		}
+		repositories {
+			maven {
+				name = "GitHubPackages"
+				url = uri("https://maven.pkg.github.com/sovannarithcheav/authenticator-api-client")
+				credentials {
+					username = System.getenv("GIT_PUBLISH_USER")
+					password = System.getenv("GIT_PUBLISH_PASSWORD")
+				}
 			}
 		}
 	}
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
+dependencies {
+	implementation(project(":authentication-client"))
+	implementation("org.springframework.boot:spring-boot-starter-web")
 }

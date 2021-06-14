@@ -1,1 +1,2 @@
-rootProject.name = "authentication_api"
+rootProject.name = "authentication-api"
+include("authentication-client")
