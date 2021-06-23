@@ -22,7 +22,7 @@ repositories {
 2. Add dependency
 ```sh
 dependencies {
-  	implementation("kh.org.soramitsu:authentication-client:${property("authentication-client-version")}")
+  	implementation("com.sovannarith.info:authentication-client:${property("authentication-client-version")}")
 }
 ```
 
